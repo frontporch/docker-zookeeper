@@ -23,5 +23,7 @@ ADD usr/local/bin/startZookeeper.sh /usr/local/bin/startZookeeper.sh
 # and port for leader election
 EXPOSE 2181 2888 3888
 
+RUN chmod 755 /usr/local/bin/startZookeeper.sh
+
 #CMD ["supervisord", "-n"]
 CMD ["/usr/local/bin/startZookeeper.sh"]
