@@ -2,8 +2,8 @@
 
 ZOOKEEPER_CONFIG="/etc/zookeeper/conf/zoo.cfg"
 
-# Set the Zookeeper ID for this container based off the last octet of the IP Address
-echo $(( $(awk 'NR==7 {print $1}' /etc/hosts | cut -d "." -f 4) - 1)) > /etc/zookeeper/conf/myid
+# Set the Zookeeper ID for this container based off the id passed into the container
+echo $ZOOKEEPER_ID > /etc/zookeeper/conf/myid
 
 # Set the config based on environment variables
 if [ ! -z "$TICK_TIME" ]; then
