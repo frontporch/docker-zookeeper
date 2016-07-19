@@ -1,13 +1,13 @@
 #! /bin/bash -e
 ZOOKEEPER_CONFIG="/opt/zookeeper/conf/zoo.cfg"
 
-
-# Set the config based on environment variables
+# Update the config based on environment variables passed into the container
 
 # the location where ZooKeeper will store the in-memory database snapshots and, unless specified otherwise, the
 # transaction log of updates to the database.
 DATA_DIR="${DATA_DIR:-/var/lib/zookeeper}"
 echo "dataDir: $DATA_DIR"
+mkdir -p ${DATA_DIR}
 sed -r -i "s|(dataDir)=(.*)|\1=$DATA_DIR|g" $ZOOKEEPER_CONFIG
 
 # This option will direct the machine to write the transaction log to the dataLogDir rather than the dataDir. This
@@ -17,6 +17,7 @@ sed -r -i "s|(dataDir)=(.*)|\1=$DATA_DIR|g" $ZOOKEEPER_CONFIG
 # dataDir to a directory not residing on that device.
 DATA_LOG_DIR="${DATA_LOG_DIR:-/var/lib/zookeeper}"
 echo "dataDir: $DATA_LOG_DIR"
+mkdir -p ${DATA_LOG_DIR}
 sed -r -i "s|(dataLogDir)=(.*)|\1=$DATA_LOG_DIR|g" $ZOOKEEPER_CONFIG
 
 # Space delimited array of Zookeeper Servers in cluster, Zookeeper defaults to a single server cluster at
@@ -41,6 +42,10 @@ if [ -n "$ZOOKEEPER_SERVERS" ]; then
 fi
 
 # Set the Zookeeper ID for this container based off the id passed into the container
+# You attribute the server id to each machine by creating a file named myid, one for each server, which resides in
+# that server's data directory, as specified by the configuration file parameter dataDir.
+# The myid file consists of a single line containing only the text of that machine's id. So myid of server 1 would
+# contain the text "1" and nothing else. The id must be unique within the ensemble and should have a value between 1 and 255.
 ZOOKEEPER_ID="${ZOOKEEPER_ID:-1}"
 echo $ZOOKEEPER_ID > ${DATA_DIR}/myid
 
