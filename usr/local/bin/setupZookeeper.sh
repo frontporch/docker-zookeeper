@@ -44,6 +44,8 @@ if [ -n "$ZOOKEEPER_SERVERS" ]; then
         # If the server we're setting in the config is the current server, then
         # use 0.0.0.0 instead of the public facing address so it will bind correctly
         if (( ${SERVER_COUNT} == ${ZOOKEEPER_ID} )); then
+            # LOCAL_PORTS="$( cut -d ':' -f 2,3 <<< ${SERVER} )"
+            # SERVER_VALUE="server.${SERVER_COUNT}=0.0.0.0:${LOCAL_PORTS}"
             SERVER_VALUE="server.${SERVER_COUNT}=0.0.0.0:2888:3888"
         else
             SERVER_VALUE="server.${SERVER_COUNT}=${SERVER}"
