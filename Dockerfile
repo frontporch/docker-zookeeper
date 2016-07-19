@@ -1,7 +1,7 @@
 FROM java:openjdk-8-jre
 
 ENV DEBIAN_FRONTEND="noninteractive"
-ENV ZOOKEEPER_VERSION="3.4.8"
+ENV ZOOKEEPER_VERSION="3.5.1-alpha"
 ENV PATH="$PATH:/opt/zookeeper/bin"
 
 # Expose default Zookeeper port, port for quorum communication,
