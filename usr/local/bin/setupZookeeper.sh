@@ -1,9 +1,6 @@
 #! /bin/bash -e
 ZOOKEEPER_CONFIG="/opt/zookeeper/conf/zoo.cfg"
 
-# Set the Zookeeper ID for this container based off the id passed into the container
-ZOOKEEPER_ID="${ZOOKEEPER_ID:-1}"
-echo $ZOOKEEPER_ID > /opt/zookeeper/conf/myid
 
 # Set the config based on environment variables
 
@@ -43,5 +40,9 @@ if [ -n "$ZOOKEEPER_SERVERS" ]; then
     done
 fi
 
-# Do what
+# Set the Zookeeper ID for this container based off the id passed into the container
+ZOOKEEPER_ID="${ZOOKEEPER_ID:-1}"
+echo $ZOOKEEPER_ID > ${DATA_DIR}/myid
+
+# Finally, execute the CMD passed into the container
 exec "$@"
