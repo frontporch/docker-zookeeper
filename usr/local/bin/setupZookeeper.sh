@@ -28,13 +28,6 @@ echo "dataDir: $DATA_LOG_DIR"
 mkdir -p ${DATA_LOG_DIR}
 sed -r -i "s|(dataLogDir)=(.*)|\1=$DATA_LOG_DIR|g" $ZOOKEEPER_CONFIG
 
-# the address (ipv4, ipv6 or hostname) to listen for client connections; that is, the address that clients attempt
-# to connect to. This is optional, by default we bind in such a way that any connection to the clientPort for any
-# address/interface/nic on the server will be accepted.
-if [ ! -z "$ZOOKEEPER_CLIENT_PORT_ADDRESS" ]; then
-    echo "clientPortAddress: $ZOOKEEPER_CLIENT_PORT_ADDRESS"
-    echo "clientPortAddress=${ZOOKEEPER_CLIENT_PORT_ADDRESS}" >> ${ZOOKEEPER_CONFIG}
-fi
 # Space delimited array of Zookeeper Servers in cluster, Zookeeper defaults to a single server cluster at
 # localhost if not provided.
 # Example:
@@ -45,23 +38,22 @@ if [ -n "$ZOOKEEPER_SERVERS" ]; then
     sed -r -i "/(server\.)[0-9]+=(.*)/d" $ZOOKEEPER_CONFIG
 
     ARRAY_OF_SERVERS=($ZOOKEEPER_SERVERS)
-    SERVER_COUNT=1
+    CURRENT_SERVER_ID=1
     for SERVER in "${ARRAY_OF_SERVERS[@]}"
     do
         # # If the server we're setting in the config is the current server, then
         # # use 0.0.0.0 instead of the public facing address so it will bind correctly
-        # if (( ${SERVER_COUNT} == ${ZOOKEEPER_ID} )); then
-        #     # LOCAL_PORTS="$( cut -d ':' -f 2,3 <<< ${SERVER} )"
-        #     # SERVER_VALUE="server.${SERVER_COUNT}=0.0.0.0:${LOCAL_PORTS}"
-        #     SERVER_VALUE="server.${SERVER_COUNT}=0.0.0.0:2888:3888"
-        # else
-        #     SERVER_VALUE="server.${SERVER_COUNT}=${SERVER}"
-        # fi
-        SERVER_VALUE="server.${SERVER_COUNT}=${SERVER}"
-        echo "server.${SERVER_COUNT}: ${SERVER_VALUE}"
+        if (( ${CURRENT_SERVER_ID} == ${ZOOKEEPER_ID} )); then
+            # LOCAL_PORTS="$( cut -d ':' -f 2,3 <<< ${SERVER} )"
+            # SERVER_VALUE="server.${CURRENT_SERVER_ID}=0.0.0.0:${LOCAL_PORTS}"
+            SERVER_VALUE="server.${CURRENT_SERVER_ID}=0.0.0.0:2888:3888"
+        else
+            SERVER_VALUE="server.${CURRENT_SERVER_ID}=${SERVER}"
+        fi
+        echo "server.${CURRENT_SERVER_ID}: ${SERVER_VALUE}"
         # append these to the end of the config
         echo "$SERVER_VALUE" >> $ZOOKEEPER_CONFIG
-        ((SERVER_COUNT++))
+        ((CURRENT_SERVER_ID++))
     done
 fi
 
